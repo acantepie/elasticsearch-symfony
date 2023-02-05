@@ -1,8 +1,58 @@
 $font-size-base: 0.85rem !default;
 $font-family-base: 'Roboto', var(--bs-font-sans-serif);
+
 @import "bootstrap/scss/bootstrap";
 @import '@mdi/font/css/materialdesignicons.css';
 
 body {
   background-color: $light;
+}
+
+// gridjs
+
+th.gridjs-th-sort {
+  cursor: pointer;
+
+  .gridjs-th-content {
+    width: calc(100% - 20px);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    float: left;
+
+  }
+
+  .gridjs-sort {
+    float: right;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .gridjs-sort-neutral {
+
+    &::before {
+      font: normal normal normal 18px/1 "Material Design Icons";
+      content: "\f04ba";
+    }
+
+  }
+
+  .gridjs-sort-asc {
+    &::before {
+      font: normal normal normal 18px/1 "Material Design Icons";
+      content: "\f04bc";
+    }
+  }
+
+  .gridjs-sort-desc {
+    &::before {
+      font: normal normal normal 18px/1 "Material Design Icons";
+      content: "\f04bd";
+    }
+  }
 }

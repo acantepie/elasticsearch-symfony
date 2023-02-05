@@ -1,4 +1,5 @@
 import JSONEditor, {JSONEditorOptions} from "jsoneditor";
+import { Grid } from "gridjs";
 
 export default class SearchEngine extends HTMLDivElement {
 
@@ -6,6 +7,7 @@ export default class SearchEngine extends HTMLDivElement {
     private $searchBtn : HTMLButtonElement
     private $searchError: HTMLDivElement
     private $searchResult: HTMLDivElement
+    private grid : Grid
 
     private queryEditor: JSONEditor|null;
 
@@ -19,6 +21,7 @@ export default class SearchEngine extends HTMLDivElement {
 
     connectedCallback(): void {
 
+        // init query editor
         const options : JSONEditorOptions = {
             mode: "code",
             enableTransform: false,
@@ -29,10 +32,35 @@ export default class SearchEngine extends HTMLDivElement {
         const json = query ? JSON.parse(query) : {}
         this.queryEditor = new JSONEditor(this.$queryEditor, options, json)
 
+        // bind search
         this.$searchBtn.addEventListener('click', evt => {
             evt.preventDefault()
             this.search()
         })
+
+        // init table
+        this.grid = new Grid({
+            className: {
+                table: 'table'
+            },
+            columns: [
+                {
+                    name: '#',
+                    sort: true,
+                },
+                {
+                    name: 'Ref',
+                    sort: true
+                },
+                {
+                    name: 'Name',
+                    sort: true
+                }
+            ],
+            data: []
+        })
+
+        this.grid.render(this.$searchResult);
     }
 
     async search(): Promise<any> {
@@ -77,27 +105,20 @@ export default class SearchEngine extends HTMLDivElement {
 
     private renderResult(response : SearchResponse<ImmeubleHistoriqueSource>): void
     {
-        console.log(response)
-
         this.$searchResult.hidden = false
         this.$searchError.hidden = true
 
-        const $tbody = this.$searchResult.querySelector('tbody')
-        let html = '';
-
-        if (response.hits.hits.length === 0) {
-            $tbody.innerHTML = '<tr><td colspan="100%" class="text-muted text-center">No result.</td></tr>'
-            return
-        }
+        const data = []
 
         for (const hit of response.hits.hits) {
-            html += '<tr>'
-            html += `<td>${hit._score}</td>`
-            html += `<td>${hit._source.ref}</td>`
-            html += `<td>${hit._source.nom}</td>`
-            html += '</td>'
+            data.push([
+                hit._score,
+                hit._source.ref,
+                hit._source.nom
+            ])
         }
 
-        $tbody.innerHTML = html
+        this.grid.updateConfig({data})
+        this.grid.forceRender()
     }
 }
