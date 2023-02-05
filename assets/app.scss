@@ -1,0 +1,8 @@
+$font-size-base: 0.85rem !default;
+$font-family-base: 'Roboto', var(--bs-font-sans-serif);
+@import "bootstrap/scss/bootstrap";
+@import '@mdi/font/css/materialdesignicons.css';
+
+body {
+  background-color: $light;
+}

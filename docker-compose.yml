@@ -1,0 +1,54 @@
+version: '3.8'
+services:
+    symfony:
+        build:
+            context: ./docker/symfony
+        hostname: elastic
+        working_dir: /home/docker/symfony
+        volumes:
+            - ~/.ssh/:/home/docker/.ssh
+            - .:/home/docker/symfony
+            - ./docker/symfony/sites:/etc/nginx/sites-enabled:ro
+            - ~/.gitconfig:/home/docker/.gitconfig
+            - zsh_history:/home/docker/.history
+        ports:
+            - "8001:80"
+            - "9000:9000"
+        command: --serve
+
+    db:
+        image: mariadb:latest
+        ports:
+            - "3307:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: rootpwd
+            MYSQL_DATABASE: es
+        volumes:
+            - ./docker/db/data:/var/lib/mysql
+
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.6.1
+        container_name: elasticsearch
+        environment:
+            - discovery.type=single-node
+            - ES_JAVA_OPTS=-Xms1g -Xmx1g
+            - xpack.security.enabled=false
+        volumes:
+            - elastic-data:/usr/share/elasticsearch/data
+        ports:
+            - '9200:9200'
+
+    kibana:
+        image: docker.elastic.co/kibana/kibana:8.6.1
+        volumes:
+            - ./docker/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+        ports:
+            - '5601:5601'
+        depends_on:
+            - elasticsearch
+
+volumes:
+    zsh_history:
+        driver: local
+    elastic-data:
+        driver: local
