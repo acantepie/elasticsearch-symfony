@@ -38,9 +38,10 @@ export default class HitOffcanvas<T> {
     setHit(hit: Hit<T>): void {
         this.el.querySelector('.offcanvas-title').textContent = hit._id
 
-        let html = '<table class="table">'
+        let html = '<table class="table table-sm">'
 
         html += `<tr><th>_id</th><td>${hit._id}</td></tr>`
+        html += `<tr><th>_index</th><td>${hit._index}</td></tr>`
         html += `<tr><th>_score</th><td>${hit._score}</td></tr>`
 
         Object.entries(hit._source).forEach(([key, value]) => {
